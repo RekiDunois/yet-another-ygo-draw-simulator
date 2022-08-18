@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import { Deck } from './components/deck'
+import { DeckImporter } from './components/deck-importer'
 
 function App() {
   return (
@@ -10,14 +11,11 @@ function App() {
           id: 1,
           name: '114514',
           quantity: 40,
-          main: [
-            { id: 1, name: '老老', quantity: 2 },
-            { id: 2, name: '瑞瑞', quantity: 2 },
-          ],
+          main: [],
           side: [],
           ex: [],
         }}
-      ></Deck>
+      />
     </div>
   )
 }
