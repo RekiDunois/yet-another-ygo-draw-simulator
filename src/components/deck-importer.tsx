@@ -1,19 +1,17 @@
 import {
   Button,
   Input,
-  HStack,
   FormControl,
   FormErrorMessage,
-  VStack,
-  Text,
   FormHelperText,
-  Box,
+  HTMLChakraProps,
+  Grid,
 } from '@chakra-ui/react'
-import React, { createRef, ReactElement, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { CardData } from '../models/deck'
 import shortid from 'shortid'
 
-export interface DeckImporterProp {
+export interface DeckImporterProp extends HTMLChakraProps<'div'> {
   OnAddCard: (card: CardData) => any
 }
 
@@ -33,65 +31,74 @@ export const DeckImporter = (props: DeckImporterProp) => {
   }
 
   const nameRef = useRef<HTMLInputElement>(null)
-  const nameInput = (
-    <Input
-      flex={5}
-      value={inputName === 'inited' ? '' : inputName}
-      placeholder="名称"
-      onChange={(e) => setInputName(e.target.value)}
-      ref={nameRef}
-    />
-  )
+
   return (
-    <HStack alignItems="stretch">
-      <FormControl isRequired isInvalid={!isNameVaild}>
+    <Grid gridColumn={'repeat(3,1fr)'} gap={2}>
+      <FormControl gridColumn={1} isRequired isInvalid={!isNameVaild}>
         {!isNameVaild ? (
           <FormErrorMessage>卡牌名称为空</FormErrorMessage>
         ) : (
-          <FormHelperText>输入卡牌名称</FormHelperText>
+          <FormHelperText>卡牌名称</FormHelperText>
         )}
-        {nameInput}
       </FormControl>
-      <FormControl isRequired isInvalid={!isNumberVaild}>
+      <FormControl gridColumn={3} isRequired isInvalid={!isNumberVaild}>
         {!isNumberVaild ? (
           <FormErrorMessage>数量有误</FormErrorMessage>
         ) : (
-          <FormHelperText>输入卡牌数量(1~3)</FormHelperText>
+          <FormHelperText>卡牌数量(1~3)</FormHelperText>
         )}
-        <Input
-          flex={1}
-          value={inputNum === 0 || isNaN(inputNum) ? '' : inputNum}
-          placeholder="数量"
-          onKeyDown={(e) => {
-            if (
-              e.code === 'Enter' &&
-              isNameVaild &&
-              isNumberVaild &&
-              inputName !== 'inited'
-            ) {
-              handleSumitCard()
-              if (nameRef.current) nameRef.current.focus()
-            }
-          }}
-          onChange={(e) => setInputNum(Number(e.target.value))}
-        />
       </FormControl>
-      <VStack>
-        <Box flex={1}></Box>
-        <Button
-          type="submit"
-          disabled={
-            !isNameVaild ||
-            !isNumberVaild ||
-            inputName === 'inited' ||
-            inputNum === 0
+      <Input
+        gridColumn={1}
+        value={inputName === 'inited' ? '' : inputName}
+        placeholder="名称"
+        onChange={(e) => setInputName(e.target.value)}
+        ref={nameRef}
+        fontSize={'sm'}
+      />
+      <Input
+        gridColumn={3}
+        value={
+          inputNum === 0 || isNaN(inputNum) || inputNum === 10 ? '' : inputNum
+        }
+        fontSize={'sm'}
+        placeholder="数量"
+        onKeyDown={(e) => {
+          if (e.code === 'Tab') {
+            if (nameRef.current) nameRef.current.focus()
           }
-          flex={2}
-          onClick={() => handleSumitCard()}
-        >
-          Add
-        </Button>
-      </VStack>
-    </HStack>
+          if (e.code === 'Enter') {
+            if (!isNameVaild || !isNumberVaild) return
+            if (inputName === 'inited') {
+              setInputName('')
+              if (nameRef.current) nameRef.current.focus()
+              return
+            }
+            if (inputNum === 0) {
+              setInputNum(10)
+              return
+            }
+            handleSumitCard()
+            if (nameRef.current) nameRef.current.focus()
+          }
+        }}
+        onChange={(e) => setInputNum(Number(e.target.value))}
+      />
+      <Button
+        fontSize={'sm'}
+        margin={'0'}
+        type="submit"
+        disabled={
+          !isNameVaild ||
+          !isNumberVaild ||
+          inputName === 'inited' ||
+          inputNum === 0
+        }
+        gridColumn={5}
+        onClick={() => handleSumitCard()}
+      >
+        Add
+      </Button>
+    </Grid>
   )
 }
